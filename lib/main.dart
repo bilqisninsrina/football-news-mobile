@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:football_news/menu.dart';
-
+import 'package:football_news/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,14 +8,14 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Football News',
       theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-          .copyWith(secondary: Colors.blueAccent[400]),      
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+            .copyWith(secondary: Colors.blueAccent[400]),
+        useMaterial3: true,
       ),
       home: MyHomePage(),
     );
