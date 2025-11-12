@@ -1,5 +1,3 @@
-// lib/screens/news_entry_list.dart
-
 import 'package:flutter/material.dart';
 import 'package:football_news/models/news_entry.dart';
 import 'package:football_news/widgets/left_drawer.dart';
@@ -7,11 +5,6 @@ import 'package:football_news/screens/news_detail.dart';
 import 'package:football_news/widgets/news_entry_card.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-
-// Ganti URL Sesuai Kebutuhan
-const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
-// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
-// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
 
 class NewsEntryListPage extends StatefulWidget {
   const NewsEntryListPage({super.key});
@@ -22,12 +15,15 @@ class NewsEntryListPage extends StatefulWidget {
 
 class _NewsEntryListPageState extends State<NewsEntryListPage> {
   Future<List<NewsEntry>> fetchNews(CookieRequest request) async {
-    // Menggunakan get() dari CookieRequest untuk mengambil data JSON
-    final response = await request.get('$baseUrl/json/');
-
-    // Decode response
+    // TODO: Replace the URL with your app's URL and don't forget to add a trailing slash (/)!
+    // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
+    // If you using chrome,  use URL http://localhost:8000
+    
+    final response = await request.get('http://localhost:8000/json/');
+    
+    // Decode response to json format
     var data = response;
-
+    
     // Convert json data to NewsEntry objects
     List<NewsEntry> listNews = [];
     for (var d in data) {
@@ -48,11 +44,11 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
       drawer: const LeftDrawer(),
       body: FutureBuilder(
         future: fetchNews(request),
-        builder: (context, AsyncSnapshot<List<NewsEntry>> snapshot) {
+        builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            if (!snapshot.hasData) {
               return const Column(
                 children: [
                   Text(
@@ -68,7 +64,7 @@ class _NewsEntryListPageState extends State<NewsEntryListPage> {
                 itemBuilder: (_, index) => NewsEntryCard(
                   news: snapshot.data![index],
                   onTap: () {
-                    // Navigasi ke halaman detail
+                    // Navigate to news detail page
                     Navigator.push(
                       context,
                       MaterialPageRoute(

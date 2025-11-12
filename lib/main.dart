@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
               .copyWith(secondary: Colors.blueAccent[400]),
           useMaterial3: true,
         ),
-        // UBAH HOME MENJADI LOGINPAGE
         home: const LoginPage(),
       ),
     );

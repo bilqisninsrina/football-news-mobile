@@ -1,12 +1,5 @@
-// lib/widgets/news_entry_card.dart
-
 import 'package:flutter/material.dart';
 import 'package:football_news/models/news_entry.dart';
-
-// Ganti URL Sesuai Kebutuhan
-const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
-// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
-// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
 
 class NewsEntryCard extends StatelessWidget {
   final NewsEntry news;
@@ -17,15 +10,6 @@ class NewsEntryCard extends StatelessWidget {
     required this.news,
     required this.onTap,
   });
-
-  // Fungsi untuk mendapatkan URL proxy
-  String getProxyImageUrl(String? imageUrl) {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      // Kembalikan URL placeholder atau kosong jika tidak ada thumbnail
-      return 'https://via.placeholder.com/150'; // Contoh placeholder
-    }
-    return '$baseUrl/proxy-image/?url=${Uri.encodeComponent(imageUrl)}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +33,7 @@ class NewsEntryCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
-                    getProxyImageUrl(news.thumbnail),
+                    'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
                     height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -61,6 +45,7 @@ class NewsEntryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
+
                 // Title
                 Text(
                   news.title,
@@ -70,9 +55,11 @@ class NewsEntryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
+
                 // Category
                 Text('Category: ${news.category}'),
                 const SizedBox(height: 6),
+
                 // Content preview
                 Text(
                   news.content.length > 100
@@ -83,12 +70,15 @@ class NewsEntryCard extends StatelessWidget {
                   style: const TextStyle(color: Colors.black54),
                 ),
                 const SizedBox(height: 6),
+
                 // Featured indicator
                 if (news.isFeatured)
                   const Text(
                     'Featured',
                     style: TextStyle(
-                        color: Colors.amber, fontWeight: FontWeight.bold),
+                      color: Colors.amber,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
               ],
             ),

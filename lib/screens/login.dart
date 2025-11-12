@@ -1,15 +1,29 @@
-// lib/screens/login.dart
-
 import 'package:football_news/screens/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:football_news/screens/register.dart'; // Import halaman register
+import 'package:football_news/screens/register.dart';
 
-// Ganti URL Sesuai Kebutuhan
-const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
-// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
-// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
+void main() {
+  runApp(const LoginApp());
+}
+
+class LoginApp extends StatelessWidget {
+  const LoginApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Login',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
+          .copyWith(secondary: Colors.blueAccent[400]),
+      ),
+      home: const LoginPage(),
+    );
+  }
+}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,18 +39,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
+        appBar: AppBar(
+            title: const Text('Login'),
+        ),
+        body: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -78,26 +93,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      minimumSize: const Size(double.infinity, 50),
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
                     onPressed: () async {
                       String username = _usernameController.text;
                       String password = _passwordController.text;
 
-                      final response =
-                          await request.login("$baseUrl/auth/login/", {
+                      // Check credentials
+                      // TODO: Change the URL and don't forget to add trailing slash (/) at the end of URL!
+                      // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
+                      // If you using chrome,  use URL http://localhost:8000
+                      final response = await request
+                          .login("http://localhost:8000/auth/login/", {
                         'username': username,
                         'password': password,
                       });
 
-                      if (context.mounted) {
-                        if (request.loggedIn) {
-                          String message = response['message'];
-                          String uname = response['username'];
+                      if (request.loggedIn) {
+                        String message = response['message'];
+                        String uname = response['username'];
+                        if (context.mounted) {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -108,9 +121,11 @@ class _LoginPageState extends State<LoginPage> {
                             ..showSnackBar(
                               SnackBar(
                                   content:
-                                      Text("$message Selamat datang, $uname.")),
+                                      Text("$message Welcome, $uname.")),
                             );
-                        } else {
+                        }
+                      } else {
+                        if (context.mounted) {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -129,12 +144,17 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
                     child: const Text('Login'),
                   ),
                   const SizedBox(height: 36.0),
                   GestureDetector(
                     onTap: () {
-                      // Navigasi ke halaman Register
                       Navigator.push(
                         context,
                         MaterialPageRoute(

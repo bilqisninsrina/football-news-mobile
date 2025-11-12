@@ -1,38 +1,20 @@
-// lib/screens/news_detail.dart
-
 import 'package:flutter/material.dart';
 import 'package:football_news/models/news_entry.dart';
 
-// Ganti URL Sesuai Kebutuhan
-const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
-// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
-// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
-
 class NewsDetailPage extends StatelessWidget {
   final NewsEntry news;
+
   const NewsDetailPage({super.key, required this.news});
 
   String _formatDate(DateTime date) {
     // Simple date formatter without intl package
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return '${date.day} ${months[date.month - 1]} ${date.year}, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  }
-
-  // Fungsi untuk mendapatkan URL proxy
-  String getProxyImageUrl(String? imageUrl) {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return ''; // Kembalikan string kosong jika tidak ada thumbnail
-    }
-    return '$baseUrl/proxy-image/?url=${Uri.encodeComponent(imageUrl)}';
   }
 
   @override
   Widget build(BuildContext context) {
-    String proxiedThumbnail = getProxyImageUrl(news.thumbnail);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('News Detail'),
@@ -44,9 +26,9 @@ class NewsDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Thumbnail image
-            if (proxiedThumbnail.isNotEmpty)
+            if (news.thumbnail.isNotEmpty)
               Image.network(
-                proxiedThumbnail,
+                'http://localhost:8000/proxy-image/?url=${Uri.encodeComponent(news.thumbnail)}',
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
@@ -58,6 +40,7 @@ class NewsDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+            
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -81,6 +64,7 @@ class NewsDetailPage extends StatelessWidget {
                         ),
                       ),
                     ),
+
                   // Title
                   Text(
                     news.title,
@@ -90,6 +74,7 @@ class NewsDetailPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
+
                   // Category and Date
                   Row(
                     children: [
@@ -120,6 +105,7 @@ class NewsDetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
+
                   // Views count
                   Row(
                     children: [
@@ -134,7 +120,9 @@ class NewsDetailPage extends StatelessWidget {
                       ),
                     ],
                   ),
+                  
                   const Divider(height: 32),
+
                   // Full content
                   Text(
                     news.content,

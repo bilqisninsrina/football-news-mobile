@@ -1,15 +1,8 @@
-// lib/screens/register.dart
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:football_news/screens/login.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-
-// Ganti URL Sesuai Kebutuhan
-const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
-// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
-// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,10 +12,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -118,25 +110,22 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 24.0),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      minimumSize: const Size(double.infinity, 50),
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    ),
                     onPressed: () async {
                       String username = _usernameController.text;
-                      String password = _passwordController.text;
+                      String password1 = _passwordController.text;
                       String password2 = _confirmPasswordController.text;
 
+                      // Check credentials
+                      // TODO: Change the URL and don't forget to add trailing slash (/) at the end of URL!
+                      // To connect Android emulator with Django on localhost, use URL http://10.0.2.2/
+                      // If you using chrome,  use URL http://localhost:8000       
                       final response = await request.postJson(
-                          "$baseUrl/auth/register/",
+                          "http://localhost:8000/auth/register/",
                           jsonEncode({
                             "username": username,
-                            "password1": password,
+                            "password1": password1,
                             "password2": password2,
                           }));
-
                       if (context.mounted) {
                         if (response['status'] == 'success') {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -151,14 +140,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  'Failed to register: ${response['message']}'),
+                            const SnackBar(
+                              content: Text('Failed to register!'),
                             ),
                           );
                         }
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
                     child: const Text('Register'),
                   ),
                 ],
