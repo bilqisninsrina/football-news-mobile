@@ -1,5 +1,16 @@
+// lib/screens/newslist_form.dart
+
+import 'dart:convert'; // TAMBAHKAN IMPORT
 import 'package:flutter/material.dart';
 import 'package:football_news/widgets/left_drawer.dart';
+import 'package:provider/provider.dart'; // TAMBAHKAN IMPORT
+import 'package:pbp_django_auth/pbp_django_auth.dart'; // TAMBAHKAN IMPORT
+import 'package:football_news/screens/menu.dart'; // TAMBAHKAN IMPORT
+
+// Ganti URL Sesuai Kebutuhan
+const String baseUrl = "https://bilqis-nisrina-footballnews.pbp.cs.ui.ac.id";
+// const String baseUrl = "http://10.0.2.2:8000"; // Untuk emulator Android
+// const String baseUrl = "http://localhost:8000"; // Untuk Chrome
 
 class NewsFormPage extends StatefulWidget {
   const NewsFormPage({super.key});
@@ -25,6 +36,9 @@ class _NewsFormPageState extends State<NewsFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    // TAMBAHKAN BARIS INI
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -32,17 +46,18 @@ class _NewsFormPageState extends State<NewsFormPage> {
             'Form Tambah Berita',
           ),
         ),
-        backgroundColor: Colors.indigo, 
-        foregroundColor: Colors.white, 
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
       ),
       drawer: const LeftDrawer(),
       body: Form(
-        key: _formKey, 
+        key: _formKey,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
+                // ... (TextFormField Judul Berita - TIDAK ADA PERUBAHAN) ...
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
@@ -66,6 +81,7 @@ class _NewsFormPageState extends State<NewsFormPage> {
                 ),
               ),
               Padding(
+                // ... (TextFormField Isi Berita - TIDAK ADA PERUBAHAN) ...
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   maxLines: 5,
@@ -90,6 +106,7 @@ class _NewsFormPageState extends State<NewsFormPage> {
                 ),
               ),
               Padding(
+                // ... (Dropdown Kategori - TIDAK ADA PERUBAHAN) ...
                 padding: const EdgeInsets.all(8.0),
                 child: DropdownButtonFormField<String>(
                   decoration: InputDecoration(
@@ -114,6 +131,7 @@ class _NewsFormPageState extends State<NewsFormPage> {
                 ),
               ),
               Padding(
+                // ... (TextFormField Thumbnail - TIDAK ADA PERUBAHAN) ...
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
@@ -131,6 +149,7 @@ class _NewsFormPageState extends State<NewsFormPage> {
                 ),
               ),
               Padding(
+                // ... (SwitchListTile Unggulan - TIDAK ADA PERUBAHAN) ...
                 padding: const EdgeInsets.all(8.0),
                 child: SwitchListTile(
                   title: const Text("Tandai sebagai Berita Unggulan"),
@@ -151,50 +170,44 @@ class _NewsFormPageState extends State<NewsFormPage> {
                       backgroundColor:
                           MaterialStateProperty.all(Colors.indigo),
                     ),
-                    onPressed: () {
+                    // UBAH FUNGSI onPressed
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Berita berhasil disimpan!'), 
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Judul: $_title'), 
-                                    Text('Isi: $_content'), 
-                                    Text('Kategori: $_category'),
-                                    Text('Thumbnail: $_thumbnail'), 
-                                    Text( 
-                                        'Unggulan: ${_isFeatured ? "Ya" : "Tidak"}'),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
+                        // Kirim ke Django
+                        final response = await request.postJson(
+                            "$baseUrl/create-flutter/",
+                            jsonEncode({
+                              "title": _title,
+                              "content": _content,
+                              "thumbnail": _thumbnail,
+                              "category": _category,
+                              "is_featured": _isFeatured,
+                            }));
+
+                        if (context.mounted) {
+                          if (response['status'] == 'success') {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("News successfully saved!"),
+                            ));
+                            // Kembali ke halaman utama
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MyHomePage()),
                             );
-                          },
-                        );
-                        _formKey.currentState!.reset(); 
-                        setState(() {
-                          _title = "";
-                          _content = "";
-                          _category = "update";
-                          _thumbnail = "";
-                          _isFeatured = false;
-                        });
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                  "Something went wrong, please try again."),
+                            ));
+                          }
+                        }
                       }
                     },
                     child: const Text(
-                      "Simpan", 
+                      "Simpan",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

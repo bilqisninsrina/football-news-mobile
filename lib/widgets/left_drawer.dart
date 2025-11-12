@@ -1,6 +1,9 @@
+// lib/widgets/left_drawer.dart
+
 import 'package:flutter/material.dart';
 import 'package:football_news/screens/menu.dart';
 import 'package:football_news/screens/newslist_form.dart';
+import 'package:football_news/screens/news_entry_list.dart'; // TAMBAHKAN IMPORT INI
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -11,6 +14,7 @@ class LeftDrawer extends StatelessWidget {
       child: ListView(
         children: [
           const DrawerHeader(
+            // ... (TIDAK ADA PERUBAHAN DI SINI) ...
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
@@ -59,6 +63,19 @@ class LeftDrawer extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => const NewsFormPage(),
                 ),
+              );
+            },
+          ),
+          // TAMBAHKAN LISTTILE BARU DI BAWAH INI
+          ListTile(
+            leading: const Icon(Icons.add_reaction_rounded),
+            title: const Text('News List'),
+            onTap: () {
+              // Route to news List page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NewsEntryListPage()),
               );
             },
           ),
